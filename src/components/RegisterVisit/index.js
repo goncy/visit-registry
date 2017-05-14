@@ -13,6 +13,8 @@ import { getDistance } from './selectors'
 
 import scanner from '../../store/scanner'
 
+import { LastVisitsQuery } from '../LastVisits'
+
 const { actions: { setScan } } = scanner
 
 export const RegisterVisit = ({ scannerItem, canRegister, distance, registerVisit }) => {
@@ -47,7 +49,8 @@ RegisterVisit.propTypes = {
 
 export const RegisterVisitQuery = gql`
   mutation ($consortiumId:ID!, $userId:ID!){
-    createdVisit: createVisit(consortiumId:$consortiumId, userId:$userId) {
+    createVisit(consortiumId:$consortiumId, userId:$userId) {
+      id
       createdAt
     }
   }
@@ -66,11 +69,11 @@ export const RegisterVisitHOC = compose(
   loadable(({ scannerStatus }) => scannerStatus === 'pending'),
   dontRender(({ userLocation, scannerItem }) => !userLocation || !scannerItem),
   withHandlers({
-    registerSuccess: ({ login, setLoading }) => ({ data: { createdVisit } }) => {
+    registerSuccess: ({ setLoading }) => () => {
       setLoading(false)
       notify('La visita se registro correctamente')
     },
-    registerFailure: ({ login, setLoading }) => res => {
+    registerFailure: ({ setLoading }) => () => {
       setLoading(false)
       notify('Hubo un error registrando la visita')
     }
@@ -87,7 +90,10 @@ export const RegisterVisitHOC = compose(
         variables: {
           userId: userProfile.id,
           consortiumId: scannerItem.id
-        }
+        },
+        refetchQueries: [{
+          query: LastVisitsQuery
+        }]
       })
       .then(registerSuccess)
       .catch(registerFailure)

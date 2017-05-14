@@ -55,10 +55,11 @@ export const LastVisitsQuery = gql`
     user {
       id
       visits {
+        id
+        createdAt
         consortium {
           name
         }
-        createdAt
       }
     }
   }
