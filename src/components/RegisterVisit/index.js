@@ -47,9 +47,12 @@ RegisterVisit.propTypes = {
 
 export const RegisterVisitMutation = gql`
   mutation ($consortiumId:ID!, $userId:ID!){
-    createVisit(consortiumId:$consortiumId, userId:$userId) {
+    visit: createVisit(consortiumId:$consortiumId, userId:$userId) {
       id
       createdAt
+      consortium {
+        name
+      }
     }
   }
 `
@@ -74,9 +77,11 @@ export const RegisterVisitHOC = compose(
         userId: userProfile.id,
         consortiumId: scannerItem.id
       },
-      refetchQueries: [{
-        query: LastVisitsQuery
-      }]
+      update: (store, { data: { visit } }) => {
+        const data = store.readQuery({ query: LastVisitsQuery })
+        data.user.visits.push(visit)
+        store.writeQuery({ query: LastVisitsQuery, data })
+      }
     }),
     registerSuccess: ({ setLoading }) => () => {
       setLoading(false)
