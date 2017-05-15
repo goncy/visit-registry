@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { compose, withProps, withHandlers, withState } from 'recompose'
+import { compose, withHandlers, withState } from 'recompose'
 import { gql, withApollo } from 'react-apollo'
 
 import notify from '../../utils/notification'
@@ -129,13 +129,13 @@ export const LoginHOC = compose(
         .catch(handleLoginFailure)
     }
   }),
-  withProps(({ handleLogin }) => ({
-    login: event => {
+  withHandlers({
+    login: ({ handleLogin }) => event => {
       event.preventDefault()
       const { email, password } = event.target
       handleLogin(email.value, password.value)
     }
-  })),
+  }),
   branchable(
     ({ logging }) => logging,
     Loader

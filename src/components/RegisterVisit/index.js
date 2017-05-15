@@ -1,19 +1,17 @@
 import React from 'react'
 import { compose, withProps, withHandlers } from 'recompose'
 import { connect } from 'react-redux'
-import { gql, graphql } from 'react-apollo'
-
-import notify from '../../utils/notification'
+import { gql, withApollo } from 'react-apollo'
 
 import withStatus from '../../hocs/withStatus'
 import loadable from '../../hocs/loadable'
 import dontRender from '../../hocs/dontRender'
 
-import { getDistance } from './selectors'
-
+import notify from '../../utils/notification'
 import scanner from '../../store/scanner'
-
 import { LastVisitsQuery } from '../LastVisits'
+
+import { getDistance } from './selectors'
 
 const { actions: { setScan } } = scanner
 
@@ -47,7 +45,7 @@ RegisterVisit.propTypes = {
   })
 }
 
-export const RegisterVisitQuery = gql`
+export const RegisterVisitMutation = gql`
   mutation ($consortiumId:ID!, $userId:ID!){
     createVisit(consortiumId:$consortiumId, userId:$userId) {
       id
@@ -57,6 +55,7 @@ export const RegisterVisitQuery = gql`
 `
 
 export const RegisterVisitHOC = compose(
+  withApollo,
   withStatus,
   connect(
     ({ scanner, user, ...state }) => ({
@@ -66,9 +65,19 @@ export const RegisterVisitHOC = compose(
       scannerItem: scanner.selected
     })
   ),
-  loadable(({ scannerStatus }) => scannerStatus === 'pending'),
+  loadable(({ scannerStatus, loading }) => scannerStatus === 'pending' || loading),
   dontRender(({ userLocation, scannerItem }) => !userLocation || !scannerItem),
   withHandlers({
+    addVisit: ({ client, userProfile, scannerItem }) => () => client.mutate({
+      mutation: RegisterVisitMutation,
+      variables: {
+        userId: userProfile.id,
+        consortiumId: scannerItem.id
+      },
+      refetchQueries: [{
+        query: LastVisitsQuery
+      }]
+    }),
     registerSuccess: ({ setLoading }) => () => {
       setLoading(false)
       notify('La visita se registro correctamente')
@@ -78,27 +87,27 @@ export const RegisterVisitHOC = compose(
       notify('Hubo un error registrando la visita')
     }
   }),
-  graphql(RegisterVisitQuery),
-  withProps(({ userLocation, scannerItem }) => ({
-    distance: getDistance(userLocation, scannerItem.location)
-  })),
-  withProps(({ distance, userProfile, scannerItem, mutate, registerSuccess, registerFailure, setLoading }) => ({
-    canRegister: distance < 500,
-    registerVisit: () => {
+  withHandlers({
+    handleRegisterVisit: ({ setLoading, addVisit, registerSuccess, registerFailure }) => () => {
       setLoading(true)
-      return mutate({
-        variables: {
-          userId: userProfile.id,
-          consortiumId: scannerItem.id
-        },
-        refetchQueries: [{
-          query: LastVisitsQuery
-        }]
-      })
-      .then(registerSuccess)
-      .catch(registerFailure)
+      return addVisit()
+        .then(registerSuccess)
+        .catch(registerFailure)
     }
-  }))
+  }),
+  withHandlers({
+    registerVisit: ({ handleRegisterVisit }) => event => {
+      event.preventDefault()
+      handleRegisterVisit()
+    }
+  }),
+  withProps(({ userLocation, scannerItem }) => {
+    const distance = getDistance(userLocation, scannerItem.location)
+    return {
+      distance,
+      canRegister: distance < 500
+    }
+  })
 )
 
 export default RegisterVisitHOC(RegisterVisit)
