@@ -3,21 +3,20 @@ import { compose, withHandlers } from 'recompose'
 import { gql, withApollo } from 'react-apollo'
 import { connect } from 'react-redux'
 
+import notify from '../../utils/notification'
+
+import QRScanner from '../common/QRScanner'
+
 import scanner from '../../store/scanner'
 
 const { actions: { setScan } } = scanner
 
 export const Scanner = ({ scan }) => (
   <div>
-    <button onClick={() => scan('http://ciudad.gov.ar/ascensores/1234')}>
-      Simular escaneo de Chiclana 100 (http://ciudad.gov.ar/ascensores/1234)
-    </button>
-    <button onClick={() => scan('http://ciudad.gov.ar/ascensores/12345')}>
-      Simular escaneo de Rivadavia 1 (http://ciudad.gov.ar/ascensores/12345)
-    </button>
-    <button onClick={() => scan('http://ciudad.gov.ar/ascensores/123456')}>
-      Simular escaneo de Caseros 754 (http://ciudad.gov.ar/ascensores/123456)
-    </button>
+    <QRScanner
+      onScan={scan}
+      onError={notify}
+    />
   </div>
 )
 
@@ -45,24 +44,28 @@ export const ScannerHOC = compose(
     unsetScan: setScan.failure
   }),
   withHandlers({
+    getConsortium: ({ client }) => url => client.query({
+      query: ScannerQuery,
+      variables: {
+        url
+      }
+    }),
     handleScanSuccess: ({ setScan }) => ({ data: { consortium } }) => {
       if (consortium && consortium.length === 1) {
         setScan(consortium[0])
       }
     },
-    handleScanFailure: ({ unsetScan }) => unsetScan
+    handleScanFailure: ({ unsetScan }) => (e) => {
+      unsetScan()
+      notify('Hubo un error obteniendo la informacion del consorcio, por favor, intente nuevamente mas tarde')
+    }
   }),
   withHandlers({
-    scan: ({ client, handleScanSuccess, handleScanFailure, startScan }) => url => {
+    scan: ({ startScan, getConsortium, handleScanSuccess, handleScanFailure }) => url => {
       startScan()
-      client.query({
-        query: ScannerQuery,
-        variables: {
-          url
-        }
-      })
-      .then(handleScanSuccess)
-      .catch(handleScanFailure)
+      return getConsortium(url)
+        .then(handleScanSuccess)
+        .catch(handleScanFailure)
     }
   })
 )

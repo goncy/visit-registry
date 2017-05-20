@@ -18,8 +18,12 @@ const { actions: { setScan } } = scanner
 export const RegisterVisit = ({ scannerItem, canRegister, distance, registerVisit }) => {
   if (canRegister) {
     return (
-      <button onClick={registerVisit}>
-        Registrar visita para {scannerItem.name}
+      <button
+        onClick={registerVisit}
+        className='b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib'
+      >
+        <i className='fa fa-map-marker' />
+        <span className='pl1'>Registrar visita para {scannerItem.name}</span>
       </button>
     )
   } else {
