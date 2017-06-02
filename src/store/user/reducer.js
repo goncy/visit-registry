@@ -1,6 +1,6 @@
 import R from 'ramda'
 
-import { setLoggedIn, setLocation, setProfile, setToken } from './actions'
+import { loggedIn, locationSet, profileSet, tokenSet } from './actions'
 
 const defaultState = {
   logged: false,
@@ -12,19 +12,19 @@ const defaultState = {
 
 const user = (state = defaultState, {type, payload}) => {
   switch (type) {
-    case setLoggedIn.SUCCESS:
+    case loggedIn.SUCCESS:
       return R.assoc('logged', true)(state)
-    case setToken.SUCCESS:
+    case tokenSet.SUCCESS:
       return R.assoc('token', payload)(state)
-    case setToken.FAILURE:
+    case tokenSet.FAILURE:
       return R.assocPath(['errors', 'token'], payload)(state)
-    case setProfile.SUCCESS:
+    case profileSet.SUCCESS:
       return R.assoc('profile', payload)(state)
-    case setProfile.FAILURE:
+    case profileSet.FAILURE:
       return R.assocPath(['errors', 'profile'], payload)(state)
-    case setLocation.SUCCESS:
+    case locationSet.SUCCESS:
       return R.assoc('location', payload)(state)
-    case setLocation.FAILURE:
+    case locationSet.FAILURE:
       return R.assocPath(['errors', 'location'], payload)(state)
     default:
       return state

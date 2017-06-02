@@ -7,7 +7,7 @@ import trackLocation from '../../hocs/trackLocation'
 import App from '../App'
 
 export const Root = () => (
-  <div className='bg-near-white vh-100'>
+  <div>
     <App />
   </div>
 )

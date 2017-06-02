@@ -1,6 +1,6 @@
 import {makeAction} from 'async-action-creator'
 
-export const setLocation = makeAction('SET_LOCATION')
-export const setLoggedIn = makeAction('SET_LOGGED_IN')
-export const setProfile = makeAction('SET_PROFILE')
-export const setToken = makeAction('SET_TOKEN')
+export const locationSet = makeAction('LOCATION_SET')
+export const loggedIn = makeAction('LOGGED_IN')
+export const profileSet = makeAction('PROFILE_SET')
+export const tokenSet = makeAction('TOKEN_SET')

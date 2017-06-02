@@ -3,26 +3,26 @@ import { connect } from 'react-redux'
 
 import user from '../../store/user'
 
-const { actions: { setLocation } } = user
+const { actions: { locationSet } } = user
 
 export default compose(
   connect(undefined, {
-    setLocationData: setLocation.success,
-    setLocationError: setLocation.failure
+    setLocation: locationSet.success,
+    setLocationFailed: locationSet.failure
   }),
   lifecycle({
     componentDidMount () {
-      const { setLocationData, setLocationError } = this.props
+      const { setLocation, setLocationFailed } = this.props
 
       if ('geolocation' in navigator) {
         navigator.geolocation.watchPosition(({ coords }) => {
-          setLocationData({
+          setLocation({
             lat: coords.latitude,
             lng: coords.longitude
           })
         })
       } else {
-        setLocationError('No se pudo obtener la ubicacion, intente nuevamente mas tarde')
+        setLocationFailed('No se pudo obtener la ubicacion, intente nuevamente mas tarde')
       }
     }
   })

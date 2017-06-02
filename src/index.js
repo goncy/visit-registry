@@ -12,6 +12,7 @@ import 'tachyons'
 import 'font-awesome/css/font-awesome.css'
 import 'node-snackbar/dist/snackbar.css'
 
+import './assets/bulma.css'
 import './index.css'
 
 const apolloClient = configureApolloClient()

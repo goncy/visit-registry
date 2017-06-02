@@ -1,6 +1,7 @@
 import React from 'react'
 import { mapProps, compose } from 'recompose'
 import { gql, graphql } from 'react-apollo'
+import moment from 'moment'
 
 import loadable from '../../hocs/loadable'
 
@@ -8,21 +9,21 @@ export const LastVisits = ({ visits }) => (
   <div className='measure-wide center'>
     <div className='overflow-auto tl'>
       {!!visits.length && (
-        <table className='f6 w-100 mw8 center ba b--black-20' cellSpacing='0'>
+        <table className='table is-bordered is-striped'>
           <thead>
             <tr>
-              <th className='fw6 bb b--black-20 tl pa3'>Nombre</th>
-              <th className='fw6 bb b--black-20 tl pa3'>Fecha</th>
+              <th>Consorcio</th>
+              <th>Fecha</th>
             </tr>
           </thead>
-          <tbody className='lh-copy'>
+          <tbody>
             {visits.map((item, index) => (
               <tr key={index}>
-                <td className='pa3 bb b--black-20'>
+                <td>
                   {item.consortium.name}
                 </td>
-                <td className='pa3 bb b--black-20'>
-                  {item.createdAt}
+                <td>
+                  {moment(item.createdAt).fromNow()}
                 </td>
               </tr>
             ))}

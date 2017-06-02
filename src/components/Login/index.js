@@ -10,50 +10,54 @@ import branchable from '../../hocs/branchable'
 
 import user from '../../store/user'
 
-const { actions: { setLoggedIn, setProfile, setToken } } = user
+import logo from '../../assets/logo.png'
+
+const { actions: { loggedIn, profileSet, tokenSet } } = user
 
 export const Login = ({ login }) => (
-  <div className='bg-near-white vh-100 pa2 pa4-ns'>
-    <article className='mw6 center bg-white br3 pa3 pa4-ns ba b--black-10'>
-      <form
-        onSubmit={login}
-        className='measure center'
-      >
-        <fieldset className='ba b--transparent ph0 mh0'>
-          <legend className='f4 fw6 ph0 mh0'>
-            Iniciar sesion
-          </legend>
-          <div className='mt3'>
-            <label className='db fw6 lh-copy f6 mb1'>
-              Email
-            </label>
-            <input
-              className='pa2 input-reset ba bg-transparent w-100'
-              type='email'
-              name='email'
-            />
-          </div>
-          <div className='mv3'>
-            <label className='db fw6 lh-copy f6 mb1'>
-              Contraseña
-            </label>
-            <input
-              className='b pa2 input-reset ba bg-transparent w-100'
-              type='password'
-              name='password'
-            />
-          </div>
-        </fieldset>
-        <div>
-          <input
-            className='b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib'
-            type='submit'
-            value='Enviar'
-          />
+  <section className='hero is-primary is-fullheight'>
+    <div className='hero-body'>
+      <div className='container'>
+        <div className='box measure center'>
+          <figure className='image center mw5 pb4 pt2'>
+            <img src={logo} alt='logo' />
+          </figure>
+          <form
+            onSubmit={login}
+            className='measure center'
+          >
+            <div className='field'>
+              <p className='control'>
+                <input
+                  className='input is-large'
+                  name='email'
+                  type='email'
+                  placeholder='Contraseña'
+                />
+              </p>
+            </div>
+
+            <div className='field'>
+              <p className='control'>
+                <input
+                  className='input is-large'
+                  name='password'
+                  type='password'
+                  placeholder='Contraseña'
+                />
+              </p>
+            </div>
+
+            <div className='field'>
+              <p className='control'>
+                <button className='button is-primary is-large w-100'>Iniciar sesion</button>
+              </p>
+            </div>
+          </form>
         </div>
-      </form>
-    </article>
-  </div>
+      </div>
+    </div>
+  </section>
 )
 
 Login.propTypes = {
@@ -77,6 +81,13 @@ export const ProfileQuery = gql`
       id
       email
       name
+      visits {
+        id
+        createdAt
+        consortium {
+          name
+        }
+      }
     }
   }
 `
@@ -89,9 +100,9 @@ export const LoginHOC = compose(
     false
   ),
   connect(undefined, {
-    setLoggedIn: setLoggedIn.success,
-    setToken: setToken.success,
-    setProfile: setProfile.success
+    logIn: loggedIn.success,
+    setToken: tokenSet.success,
+    setProfile: profileSet.success
   }),
   withHandlers({
     getToken: ({ client }) => (email, password) => client.mutate({
@@ -109,9 +120,9 @@ export const LoginHOC = compose(
       query: ProfileQuery
     }),
     saveProfile: ({ setProfile }) => ({ data: { user } }) => setProfile(user),
-    handleLoginSuccess: ({ setLogging, setLoggedIn }) => () => {
+    handleLoginSuccess: ({ setLogging, logIn }) => () => {
       setLogging(false)
-      setLoggedIn()
+      logIn()
     },
     handleLoginFailure: ({ setLogging, loginFailed }) => res => {
       setLogging(false)
