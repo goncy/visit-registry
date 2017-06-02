@@ -10,9 +10,9 @@ import './App.css'
 
 export const App = () => (
   <Router>
-    <div className='App'>
+    <div className='App h-100 min-vh-100 flex flex-column'>
       <Header />
-      <div className='body pa2 pa4-ns'>
+      <div className='body pa2 pa4-ns flex flex-auto justify-center items-center'>
         <Switch>
           <Route exact path='/' component={RegisterVisit} />
           <Route exact path='/visitas' component={LastVisits} />

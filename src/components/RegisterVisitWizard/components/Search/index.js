@@ -17,7 +17,7 @@ export const Search = ({ submit, loading }) => (
     onSubmit={submit}
   >
     <div className='field has-addons'>
-      <p className='control is-expanded'>
+      <p className='control'>
         <input
           name='code'
           type='number'

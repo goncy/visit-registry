@@ -41,11 +41,19 @@ export const Register = ({ selectedConsortium, canRegister, distance, createVisi
     )
   } else {
     return (
-      <article className='mw6 center message is-warning'>
-        <div className='message-body'>
-          No se puede registrar la visita, se encuentra muy lejos del consorcio {selectedConsortium.name} ({distance} metros)
+      <div className='mw6 center'>
+        <article className='message is-warning'>
+          <div className='message-body'>
+            No se puede registrar la visita, se encuentra muy lejos del consorcio {selectedConsortium.name} ({distance} metros)
         </div>
-      </article>
+        </article>
+        <a
+          className='button'
+          onClick={previousStep}
+        >
+          <span>Volver atras</span>
+        </a>
+      </div>
     )
   }
 }

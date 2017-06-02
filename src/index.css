@@ -7,3 +7,13 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.snackbar-container.snackbar-pos.top-right {
+  display: flex;
+  pointer-events: none;
+  justify-content: center;
+}
+
+.snackbar-container.snackbar-pos.top-right .action {
+  display: none;
+}

@@ -3,7 +3,7 @@ import React from 'react'
 import RegisterVisitWizard from '../../components/RegisterVisitWizard'
 
 const RegisterVisitScene = () => (
-  <div className='pv2'>
+  <div>
     <RegisterVisitWizard />
   </div>
 )
